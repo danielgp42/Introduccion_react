@@ -1,5 +1,5 @@
 import Tarjeta from './Tarjeta';
-
+import ListaCompras from './Listacompras';
 function App() {
   return (
     <div>
@@ -17,6 +17,7 @@ function App() {
         nombre={"Alexis"}
         profesion={"Ingeniero civil"}
       />
+      <ListaCompras/>
     </div>
   );
 }
