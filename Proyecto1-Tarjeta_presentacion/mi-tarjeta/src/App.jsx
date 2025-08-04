@@ -1,65 +1,100 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import "./Compras.css";
-
+import Planeta from "./Planeta";
+import './Planetas.css';
 function App() {
-  const [tareas, setTareas] = useState([]);
-  const [nuevaTarea, setNuevaTarea] = useState('');
-  const [duracion, setDuracion] = useState('');
+  //Estado de la Nave
+  const [distancia, setDistancia] = useState(0);
+  const [combustible, setCombustible] = useState(100);
+  const [estadoNave, setEstadoNave] = useState("En órbita");
+  const [planetasVisitados, setPlanetasVisitados] = useState([]);
+  const [planetaCounter, setPlanetaCounter] = useState(1);
+  const [mensajeAlerta, setMensajeAlerta] = useState('');
 
-  const calcularTiempoTotal = useMemo(() => {
-    console.log("Calculando tiempo total...");
-    return tareas.reduce((total, tarea) => total + tarea.duracion, 0);
-  }, [tareas]); // Solo se recalcula cuando cambian las tareas
-
-  // Efecto secundario: Actualizar el título del documento cada vez que cambia el total
   useEffect(() => {
-    // Usamos el valor directamente de totalTiempoCalculado
-    document.title = `Total: ${calcularTiempoTotal} minutos`;
-  }, [calcularTiempoTotal]); // Se ejecuta cada vez que el totalTiempoCalculado cambia
+    console.log("¡El panel de control está listo!"); // Mensaje de montaje
 
-  // Función para agregar una nueva tarea
-  const agregarTarea = (e) => {
-    e.preventDefault(); // Previene la recarga de la página
+    // Simulacion de vuelo
+    const intervaloVuelo = setInterval(() => {
+      setCombustible(prevCombustible => {
+        if (prevCombustible > 0) {
+          return prevCombustible - 1;
+        }
+        setEstadoNave("Sin combustible");
+        return 0;
+      });
+      setDistancia(prevDistancia => prevDistancia + 10); // Aumenta la distancia en 10 km
+    }, 1000); //Un segundo
+    return () => {
+      clearInterval(intervaloVuelo);
+      console.log("El panel de control se ha apagado."); // Mensaje de desmontaje
+    };
+  }, []);
 
-    if (nuevaTarea.trim() !== '' && duracion.trim() !== '') {
-      const nuevaTareaObj = {
-        nombre: nuevaTarea,
-        duracion: parseInt(duracion) // Asegúrate de que la duración sea un número
-      };
-      setTareas([...tareas, nuevaTareaObj]);
-      setNuevaTarea('');
-      setDuracion('');
+  useEffect(() => {
+    if (combustible < 100 && combustible >= 0) {
+      console.log(`¡Combustible actualizado! Combustible actual: ${combustible}`);
+    }
+    if (combustible === 0 && estadoNave !== "Sin combustible") {
+      setEstadoNave("Sin combustible");
+    }
+  }, [combustible, estadoNave]); 
+
+  const mensajeEstado = useMemo(() => {
+    return `Estado: ${estadoNave}`;
+  }, [estadoNave]); 
+
+  // --- Función para Aterrizar ---
+  const aterrizar = () => {
+    if (combustible > 0 && estadoNave !== "Aterrizando") {
+      setEstadoNave("Aterrizando"); // Cambia el estado de la nave a "Aterrizando"
+      const nuevoPlaneta = `Planeta ${planetaCounter}`; // Genera un nombre para el nuevo planeta
+      setPlanetasVisitados(prevPlanetas => [...prevPlanetas, nuevoPlaneta]);
+      setPlanetaCounter(prevCounter => prevCounter + 1); 
+      setMensajeAlerta(''); 
+    } else if (combustible === 0) {
+      setMensajeAlerta("¡No tienes suficiente combustible para aterrizar!");
     }
   };
 
-
   return (
-    <div>
-      <h1>Contador de Tareas</h1>
+    <div className='app-container'>
+      <h1>Panel de Control de la Nave</h1>
       <div>
-        <input 
-          type="text" 
-          value={nuevaTarea} 
-          onChange={(e) => setNuevaTarea(e.target.value)} 
-          placeholder="Nombre de la tarea" 
-        />
-        <input 
-          type="number" 
-          value={duracion} 
-          onChange={(e) => setDuracion(e.target.value)} 
-          placeholder="Duración en minutos" 
-        />
-        <button onClick={agregarTarea}>Agregar tarea</button>
+        <p>Distancia recorrida: {distancia} km </p>
+        <p >Combustible: {combustible} unidades
+          {combustible <= 10 && combustible > 0 && <span className="low-fuel"> (¡Bajo!)</span>}
+          {combustible === 0 && <span className="out-of-fuel"> (¡Agotado!)</span>}
+        </p>
+        <p >{mensajeEstado}</p>
+        
+        <button
+          onClick={aterrizar}
+          disabled={combustible <= 0 || estadoNave === "Aterrizando" || estadoNave === "Sin combustible"}
+        >
+          Aterrizar
+        </button>
       </div>
 
-      <h2>Tareas</h2>
-      <ul>
-        {tareas.map((tarea, index) => (
-          <li key={index}>{tarea.nombre}: {tarea.duracion} minutos</li>
-        ))}
-      </ul>
+      {mensajeAlerta && (
+        <div className="alert-message">
+          {mensajeAlerta}
+        </div>
+      )}
 
-      <h3>Total de tiempo: {calcularTiempoTotal} minutos</h3>
+      <h2>Planetas Visitados:</h2>
+      <div>
+        {planetasVisitados.length === 0 ? (
+          <p className="no-planets-message">Aún no has visitado ningún planeta.</p>
+        ) : (
+          <ul>
+            {planetasVisitados.map((planeta, index) => (
+              <li key={index}>
+                <Planeta nombre={planeta} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
