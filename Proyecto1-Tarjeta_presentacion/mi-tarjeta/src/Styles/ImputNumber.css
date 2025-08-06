@@ -1,0 +1,14 @@
+.input-number {
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  width: 200px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.input-number:focus {
+  outline: none;
+  border-color: #3498db;
+}

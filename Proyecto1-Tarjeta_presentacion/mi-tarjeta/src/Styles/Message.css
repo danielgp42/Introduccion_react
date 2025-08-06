@@ -1,0 +1,7 @@
+.message {
+  font-size: 18px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 20px;
+  min-height: 22px; /* Mantiene el espacio aunque no haya mensaje */
+}
