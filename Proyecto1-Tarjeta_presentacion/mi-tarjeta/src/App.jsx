@@ -1,12 +1,10 @@
 
-
 import React from 'react';
-import Game from '../src/Components/Game';
-
+import InventoryManager from './Components/InventoryManager';
 function App() {
   return (
-    <div className="App">
-      <Game />
+    <div>
+      <InventoryManager />
     </div>
   );
 }
