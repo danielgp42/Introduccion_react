@@ -17,5 +17,4 @@ function ProductItem({ product, onIncrement, onDecrement, onRemove }) {
   );
 }
 
-// Opcional: Optimizamos este componente para evitar renderizados innecesarios.
 export default React.memo(ProductItem);

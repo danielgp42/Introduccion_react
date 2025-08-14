@@ -36,19 +36,17 @@ function reducer(state, action) {
   }
 }
 
-// 2. Componente principal
 export default function InventoryManager() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Usamos useMemo para optimizar el filtro de productos
   const filteredProducts = useMemo(() => {
     return state.products.filter(product =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [state.products, searchTerm]);
 
-  // Usamos useCallback para memoizar las funciones de dispatch
+  // useCallback para memoizar las funciones de dispatch
   const handleAddProduct = useCallback((productName) => {
     dispatch({ type: "add", name: productName });
   }, []);
